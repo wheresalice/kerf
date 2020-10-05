@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"time"
@@ -71,8 +72,12 @@ var publishCmd = &cobra.Command{
 
 		defer p.Close()
 		var start = time.Now()
+		messageValue, err := ioutil.ReadFile(value)
+		if err != nil {
+			log.Fatal(err)
+		}
 		for j := 0; j < messages; j++ {
-			p.ProduceChannel() <- &kafka.Message{TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: int32(partition)}, Value: []byte(value)}
+			p.ProduceChannel() <- &kafka.Message{TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: int32(partition)}, Value: messageValue}
 		}
 		<-done
 		elapsed := time.Since(start)
@@ -86,7 +91,7 @@ func init() {
 
 	publishCmd.Flags().StringVarP(&broker, "broker", "b", "","bootstrap server")
 	publishCmd.Flags().StringVarP(&topic, "topic", "t", "","kafka topic")
-	publishCmd.Flags().StringVarP(&value, "value", "v", "","message value")
+	publishCmd.Flags().StringVarP(&value, "value", "v", "","file containing the message value to produce")
 	publishCmd.Flags().IntVarP(&messages, "messages", "m", 1, "number of messages to generate")
 	publishCmd.Flags().IntVarP(&partition, "partition", "p", 0, "topic partition")
 
