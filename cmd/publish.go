@@ -58,10 +58,13 @@ var publishCmd = &cobra.Command{
 		go func() {
 			var msgCount int
 			for e := range p.Events() {
-				msg := e.(*kafka.Message)
-				if msg.TopicPartition.Error != nil {
-					log.Printf("delivery report error: %v", msg.TopicPartition.Error)
-					os.Exit(1)
+				switch m:= e.(type) {
+				case *kafka.Message:
+					if m.TopicPartition.Error != nil {
+						log.Printf("delivery report error: %v", m.TopicPartition.Error)
+					}
+				default:
+					log.Printf("Ignored event: %s", e)
 				}
 				msgCount++
 				if msgCount >= messages {
