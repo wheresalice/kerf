@@ -3,7 +3,7 @@ module github.com/wheresalice/kerf
 go 1.17
 
 require (
-	github.com/confluentinc/confluent-kafka-go v1.9.1
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
